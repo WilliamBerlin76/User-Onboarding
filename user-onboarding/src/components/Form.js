@@ -1,6 +1,7 @@
 import React from 'react';
 import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 
 const FormDetails = ({errors, touched}) => {
   
@@ -39,11 +40,26 @@ const formikFormDetails = withFormik({
                     .required("This field is required"),
     }),
   ////////////////handleSubmit below/////////////
-    handleSubmit(values){
+    handleSubmit(values, {resetForm, setErrors, setSubmitting}){
+        if (values.email === "taken@email.com"){
+            setErrors({email: 'email already taken'});
+        } else {
+            axios
+            .post('https://reqres.in/api/users', values)
+            .then(res => {
+                console.log(res);
+                resetForm();
+                setSubmitting(false);
+            })
+            .catch(err => {
+                console.log(err);
+                setSubmitting(false);
+            })
+        }
         console.log(values);
         //Form Submition code will go here
     }
 
-})(FormDetails)
+})(FormDetails);
 
 export default formikFormDetails
